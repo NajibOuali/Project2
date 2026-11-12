@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Darija Translator - Side Panel",
+  "version": "1.0.0",
+  "description": "Translate text to Moroccan Darija using LLM and central Jakarta RESTful Web Service.",
+  "permissions": [
+    "sidePanel",
+    "contextMenus",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "action": {
+    "default_title": "Open Darija Translator Side Panel"
+  }
+}

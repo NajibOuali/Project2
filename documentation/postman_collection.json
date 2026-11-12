@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "LLM-Powered Darija Translator API",
+    "description": "Postman collection covering all positive and negative test cases for the Jakarta RESTful Web Service.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/backend/api",
+      "type": "string"
+    },
+    {
+      "key": "username",
+      "value": "user",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "darija123",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Successful Translation (200 OK)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{username}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Hello, how are you?\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/translator/translate",
+          "host": ["{{baseUrl}}"],
+          "path": ["translator", "translate"]
+        },
+        "description": "Expected Status: 200 OK\nReturns translatedText in authentic Moroccan Darija."
+      }
+    },
+    {
+      "name": "2. Empty Text Validation (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{username}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"   \"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/translator/translate",
+          "host": ["{{baseUrl}}"],
+          "path": ["translator", "translate"]
+        },
+        "description": "Expected Status: 400 Bad Request\nReturns error response indicating text cannot be blank."
+      }
+    },
+    {
+      "name": "3. Missing Authorization (401 Unauthorized)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Hello world\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/translator/translate",
+          "host": ["{{baseUrl}}"],
+          "path": ["translator", "translate"]
+        },
+        "description": "Expected Status: 401 Unauthorized\nReturns 401 with WWW-Authenticate header."
+      }
+    },
+    {
+      "name": "4. Incorrect Username or Password (401 Unauthorized)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "invalidUser",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "wrongPassword",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Hello world\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/translator/translate",
+          "host": ["{{baseUrl}}"],
+          "path": ["translator", "translate"]
+        },
+        "description": "Expected Status: 401 Unauthorized\nReturns 401 with Invalid username or password error."
+      }
+    },
+    {
+      "name": "5. Invalid JSON Body (400 Bad Request)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            {
+              "key": "username",
+              "value": "{{username}}",
+              "type": "string"
+            },
+            {
+              "key": "password",
+              "value": "{{password}}",
+              "type": "string"
+            }
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"text\": \"Unclosed string }"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/translator/translate",
+          "host": ["{{baseUrl}}"],
+          "path": ["translator", "translate"]
+        },
+        "description": "Expected Status: 400 Bad Request"
+      }
+    }
+  ]
+}

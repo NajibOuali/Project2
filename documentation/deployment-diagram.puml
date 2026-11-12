@@ -1,0 +1,42 @@
+@startuml
+skinparam roundcorner 10
+skinparam nodeFontSize 12
+
+node "Client Tier" {
+    node "Browser Environment" {
+        component [Chrome Extension (MV3)\nSide Panel & Context Menu] as ChromeExt
+    }
+    node "Web Server / PHP Host" {
+        component [PHP Web Client\n(cURL & Web UI)] as PhpClient
+    }
+    node "User Desktop (OS)" {
+        component [Python Desktop Client\n(Tkinter & Requests)] as PythonClient
+    }
+    node "Mobile Device (Android / iOS)" {
+        component [React Native App\n(Expo & Fetch)] as MobileClient
+    }
+}
+
+node "Backend Application Server\n(Payara Micro / WildFly / Jakarta EE 10)" {
+    folder "WAR Deployment (/backend)" {
+        component [CorsFilter] as CORS
+        component [BasicAuthFilter\n(HTTP Basic Auth)] as AuthFilter
+        component [TranslatorResource\n(POST /api/translator/translate)] as Resource
+        component [GeminiTranslationService\n(Java 21 HttpClient)] as Service
+    }
+}
+
+cloud "Google Cloud Platform" {
+    component [Google Gemini API\n(v1beta / Generative Language)] as GeminiAPI
+}
+
+ChromeExt --> AuthFilter : HTTP/JSON (Basic Auth)
+PhpClient --> AuthFilter : HTTP/JSON (Basic Auth)
+PythonClient --> AuthFilter : HTTP/JSON (Basic Auth)
+MobileClient --> AuthFilter : HTTP/JSON (Basic Auth)
+
+AuthFilter --> Resource : Authorized Request
+Resource --> Service : Business Delegation
+Service --> GeminiAPI : HTTPS / JSON\n(API Key & System Prompt)
+
+@enduml

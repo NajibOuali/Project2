@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Darija Translator</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="logo-area">
+        <span class="logo-icon">🇲🇦</span>
+        <h1>Darija Translator</h1>
+      </div>
+      <button id="toggle-settings-btn" class="icon-btn" title="API Settings">⚙️</button>
+    </header>
+
+    <!-- Settings Panel (Collapsible) -->
+    <div id="settings-panel" class="settings-panel hidden">
+      <h3>Connection Settings</h3>
+      <label for="api-url">API Endpoint:</label>
+      <input type="text" id="api-url" value="http://localhost:8080/backend/api/translator/translate" />
+
+      <label for="api-username">Username:</label>
+      <input type="text" id="api-username" value="user" />
+
+      <label for="api-password">Password:</label>
+      <input type="password" id="api-password" value="darija123" />
+
+      <button id="save-settings-btn" class="btn secondary-btn">Save Settings</button>
+      <div id="settings-msg" class="info-msg"></div>
+    </div>
+
+    <!-- Main Translation Form -->
+    <main class="main-content">
+      <div class="card">
+        <div class="card-header">
+          <label for="source-text">Original Text (English / Any)</label>
+          <div class="card-actions">
+            <button id="mic-btn" class="icon-btn" title="Speech Input (Voice)">🎤</button>
+            <button id="clear-btn" class="icon-btn" title="Clear Input">🗑️</button>
+          </div>
+        </div>
+        <textarea id="source-text" placeholder="Type, paste, or select text on webpage..." rows="4"></textarea>
+        
+        <button id="translate-btn" class="btn primary-btn">
+          <span id="btn-text">Translate to Darija</span>
+          <span id="loading-spinner" class="spinner hidden"></span>
+        </button>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card result-card">
+        <div class="card-header">
+          <label>Moroccan Darija (الدارجة)</label>
+          <div class="card-actions">
+            <button id="speak-btn" class="icon-btn" title="Read Aloud" disabled>🔊</button>
+            <button id="copy-btn" class="icon-btn" title="Copy to Clipboard" disabled>📋</button>
+          </div>
+        </div>
+        <div id="result-box" class="result-box placeholder" dir="rtl">
+          الترجمة ستظهر هنا...
+        </div>
+        <div id="error-box" class="error-box hidden"></div>
+      </div>
+
+      <!-- Translation History -->
+      <div class="history-section">
+        <div class="section-header">
+          <h3>Recent History</h3>
+          <button id="clear-history-btn" class="btn-text">Clear</button>
+        </div>
+        <ul id="history-list" class="history-list">
+          <li class="empty-history">No translations yet.</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>

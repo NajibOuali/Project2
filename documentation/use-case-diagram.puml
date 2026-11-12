@@ -1,0 +1,34 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam roundcorner 10
+
+actor "End User" as User
+actor "Google Gemini LLM" as Gemini
+
+rectangle "LLM Darija Translator System" {
+    usecase "Translate Text to Darija" as UC_Translate
+    usecase "Translate Web Selection via Context Menu" as UC_ContextMenu
+    usecase "Voice Input (Speech-to-Text)" as UC_VoiceInput
+    usecase "Listen to Translation (Text-to-Speech)" as UC_TTS
+    usecase "Copy Translation to Clipboard" as UC_Copy
+    usecase "View & Manage Translation History" as UC_History
+    usecase "Configure API Credentials & Endpoint" as UC_Settings
+    usecase "Authenticate with Basic Auth" as UC_Auth
+    usecase "Generate Moroccan Darija Translation" as UC_Generate
+}
+
+User --> UC_Translate
+User --> UC_ContextMenu
+User --> UC_VoiceInput
+User --> UC_TTS
+User --> UC_Copy
+User --> UC_History
+User --> UC_Settings
+
+UC_Translate ..> UC_Auth : <<include>>
+UC_ContextMenu ..> UC_Translate : <<include>>
+UC_Translate ..> UC_Generate : <<include>>
+UC_Generate --> Gemini : REST Request
+
+@enduml

@@ -1,0 +1,96 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome false
+skinparam roundcorner 10
+skinparam classFontSize 12
+skinparam classFontName "Arial"
+
+package "com.translator.resource" {
+    class TranslatorResource {
+        - GeminiTranslationService translationService
+        + translate(request: TranslationRequest, securityContext: SecurityContext): Response
+    }
+}
+
+package "com.translator.service" {
+    class GeminiTranslationService {
+        - HttpClient httpClient
+        - static String DEFAULT_MODEL
+        - static String GEMINI_API_URL
+        - static Duration TIMEOUT
+        - static String SYSTEM_INSTRUCTION
+        + translate(text: String): String
+        # buildRequestPayload(text: String): String
+        # extractTranslationFromResponse(responseBody: String): String
+        # getApiKey(): String
+        # getModelName(): String
+        - extractErrorMessage(responseBody: String, statusCode: int): String
+    }
+}
+
+package "com.translator.model" {
+    class TranslationRequest {
+        - String text
+        + getText(): String
+        + setText(text: String): void
+    }
+
+    class TranslationResponse {
+        - String originalText
+        - String translatedText
+        - String sourceLanguage
+        - String targetLanguage
+        + getOriginalText(): String
+        + setOriginalText(originalText: String): void
+        + getTranslatedText(): String
+        + setTranslatedText(translatedText: String): void
+        + getSourceLanguage(): String
+        + setSourceLanguage(sourceLanguage: String): void
+        + getTargetLanguage(): String
+        + setTargetLanguage(targetLanguage: String): void
+    }
+
+    class ErrorResponse {
+        - String error
+        - int status
+        - long timestamp
+        + getError(): String
+        + setError(error: String): void
+        + getStatus(): int
+        + setStatus(status: int): void
+        + getTimestamp(): long
+        + setTimestamp(timestamp: long): void
+    }
+}
+
+package "com.translator.security" {
+    class BasicAuthFilter {
+        - static String AUTH_SCHEME_BASIC
+        - static String REALM
+        - static Jsonb JSONB
+        - static String DEFAULT_USERNAME
+        - static String DEFAULT_PASSWORD
+        + filter(requestContext: ContainerRequestContext): void
+        # authenticate(username: String, password: String): boolean
+        # getExpectedUsername(): String
+        # getExpectedPassword(): String
+        - abortWithUnauthorized(requestContext: ContainerRequestContext, message: String): void
+    }
+}
+
+package "com.translator.config" {
+    class ApplicationConfig {
+    }
+
+    class CorsFilter {
+        + filter(requestContext: ContainerRequestContext, responseContext: ContainerResponseContext): void
+    }
+}
+
+TranslatorResource --> GeminiTranslationService : delegates translation
+TranslatorResource ..> TranslationRequest : consumes
+TranslatorResource ..> TranslationResponse : produces
+TranslatorResource ..> ErrorResponse : produces on error
+BasicAuthFilter ..> ErrorResponse : produces 401 response
+
+@enduml

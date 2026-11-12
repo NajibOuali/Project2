@@ -1,0 +1,47 @@
+@startuml
+autonumber
+skinparam roundcorner 10
+skinparam responseMessageBelowArrow true
+
+actor "User" as User
+participant "Client Application\n(Extension / PHP / Python / Mobile)" as Client
+participant "BasicAuthFilter\n(Jakarta Security)" as Filter
+participant "TranslatorResource\n(JAX-RS Endpoint)" as Resource
+participant "GeminiTranslationService\n(Backend Service)" as Service
+participant "Google Gemini API\n(v1beta REST API)" as Gemini
+
+User -> Client: Enters/Selects text & clicks "Translate"
+Client -> Filter: HTTP POST /api/translator/translate\n[Authorization: Basic dXNlcjpkYXJpamExMjM=]\n{"text": "Hello, how are you?"}
+
+alt Invalid or Missing Credentials
+    Filter --> Client: HTTP 401 Unauthorized\n{"error": "Missing or invalid HTTP Basic Authorization header."}
+    Client --> User: Display Authentication Error
+else Valid Credentials
+    Filter -> Resource: Forward authorized request
+    Resource -> Resource: Validate input ("text" != null && !blank)
+    
+    alt Empty Text
+        Resource --> Client: HTTP 400 Bad Request\n{"error": "Translation text cannot be empty or blank."}
+        Client --> User: Display Validation Error
+    else Valid Text
+        Resource -> Service: translate("Hello, how are you?")
+        Service -> Service: Formulate JSON payload with system prompt\n("You are a professional Moroccan Darija translator...")
+        Service -> Gemini: HTTPS POST /v1beta/models/{model}:generateContent?key={API_KEY}
+        
+        alt Gemini API Success
+            Gemini --> Service: HTTP 200 OK with candidates JSON
+            Service -> Service: Parse JSON & extract "سلام، كيداير؟"
+            Service --> Resource: "سلام، كيداير؟"
+            Resource --> Client: HTTP 200 OK\n{"originalText": "...", "translatedText": "سلام، كيداير؟", ...}
+            Client -> Client: Save to local history
+            Client --> User: Display Moroccan Darija translation & enable TTS/Copy
+        else Gemini API Error
+            Gemini --> Service: HTTP 4xx/5xx Error
+            Service --> Resource: throws IllegalStateException("Translation service failed")
+            Resource --> Client: HTTP 500 Internal Server Error\n{"error": "..."}
+            Client --> User: Display Error Message
+        end
+    end
+end
+
+@enduml
